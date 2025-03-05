@@ -1,11 +1,9 @@
-import { Button } from "@/components/ui/button";
+import Tiptap from "./Tiptap";
 
-function App() {
+export default function App() {
   return (
     <div className="flex flex-col items-center justify-center min-h-svh">
-      <Button>Click me</Button>
+      <Tiptap />
     </div>
   );
 }
-
-export default App;
