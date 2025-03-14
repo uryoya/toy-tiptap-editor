@@ -1,41 +1,49 @@
-// src/Tiptap.tsx
-import {
-  EditorProvider,
-  FloatingMenu,
-  BubbleMenu,
-  useCurrentEditor,
-} from "@tiptap/react";
+import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { Button } from "./components/ui/button";
+import Link from "@tiptap/extension-link";
+import React from "react";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "./components/ui/resizable";
 
-// define your extension array
-const extensions = [StarterKit];
-
-const content = "<p>Hello World!</p>";
-
-const EditorJSONConsoleLogButton = () => {
-  const { editor } = useCurrentEditor();
-
-  const previewEditorJson = () => {
-    console.log(editor?.getJSON());
-  };
-
-  return <Button onClick={previewEditorJson}>preview</Button>;
+const Preview = (props: { data: string; className?: string }) => {
+  return (
+    <div className={props.className}>
+      <p className="text-xs font-mono  whitespace-pre-wrap">{props.data}</p>
+    </div>
+  );
 };
 
-const Tiptap = () => {
+const Tiptap: React.FC = () => {
+  const editor = useEditor({
+    extensions: [StarterKit, Link],
+    content: `<a href="https://github.com">Hello World!</a>`,
+    editorProps: {
+      attributes: {
+        class: "prose focus:outline-none",
+      },
+    },
+  });
+
+  if (!editor) {
+    return null;
+  }
+
   return (
-    <EditorProvider
-      extensions={extensions}
-      content={content}
-      editorContainerProps={{
-        className: "p-2 rounded-md border-2 border-solid",
-      }}
-      slotAfter={<EditorJSONConsoleLogButton />}
-    >
-      <FloatingMenu editor={null}>This is the floating menu</FloatingMenu>
-      <BubbleMenu editor={null}>This is the bubble menu</BubbleMenu>
-    </EditorProvider>
+    <ResizablePanelGroup direction="vertical">
+      <ResizablePanel defaultSize={75}>
+        <EditorContent className="h-full p-2" editor={editor} />
+      </ResizablePanel>
+      <ResizableHandle withHandle />
+      <ResizablePanel defaultSize={25}>
+        <Preview
+          className="p-2 h-full bg-gray-300 "
+          data={JSON.stringify(editor.getJSON(), null, 2)}
+        />
+      </ResizablePanel>
+    </ResizablePanelGroup>
   );
 };
 
